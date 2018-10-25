@@ -56,6 +56,15 @@ module.exports = function (app) {
     });
 
 
+    app.get('/uploadzip', function (req, res) {
+        var form = "<html><head><title>Upload ZIP file</title></head>";
+        form += "<body><form action='/uploadzip' method='post' enctype='multipart/form-data'>";
+        form += "Upload Zip File: <input type='file' name='import'> <input type='submit' name='upload' value='Upload'>";
+        form += "</form></body></html>";
+        return res.send(form);
+    });
+
+
     app.post('/uploadzip', upload.any(), function (req, res) {
         try {
             if (req.files) {
@@ -77,7 +86,8 @@ module.exports = function (app) {
             var dest =  path.resolve(req.files[0].destination, new Date().getTime() + '-' + req.files[0].originalname);
             fs.renameSync(src, dest);
             var zip = new AdmZip(dest);
-            if (!fs.exists(extractPath)) {
+            deleteFolderRecursive(extractPath);
+            if (!fs.existsSync(extractPath)) {
                 try {
                     fs.mkdirSync(extractPath);
                 } catch (e) {
