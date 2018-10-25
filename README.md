@@ -309,6 +309,8 @@ file should be as follows:
 
 The file upload API accepts a `multipart/form-data` type request with the zip file as an input type=file attachment.
 
+An example upload form is provided in this module at the `GET /uploadzip` endpoint.
+
 The response of a sucessful zip-file upload is a 200 OK JSON response with a `migratedVersions` property giving the array of migrated versions.
 Any error will result in a non-200 OK response with appropriate error message in the body of the response.
 
