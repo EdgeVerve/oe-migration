@@ -1,26 +1,18 @@
 {
-  "_meta": {
-    "sources": [
-      "../common/models"
-    ],
-    "mixins": [
-    ]
-  },
-  "SystemConfig": {
-    "dataSource": "db",
-    "public": true
-  },
-  "MigrationLog": {
-    "dataSource": "db",
-    "public": true
-  },
-  "MigrationTest1": {
-    "dataSource": "db",
-    "public": true
-  },
-  "MigrationTest2": {
-    "dataSource": "db",
-    "public": true
+    "_meta": {
+      "sources": [
+        "../common/models"
+      ],
+      "mixins": [
+      ]
+    },
+    "SystemConfig": {
+      "dataSource": "db",
+      "public": true
+    },
+    "MigrationLog": {
+      "dataSource": "db",
+      "public": true
+    }
   }
-
-}
+  
