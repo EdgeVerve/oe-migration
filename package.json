@@ -1,0 +1,56 @@
+{
+  "name": "oe-migration",
+  "version": "1.0.0",
+  "description": "This module is an app-list module for oe-Cloud based applications. It provides the ability to perform data migration and/or data seeding into the app db from json files",
+  "engines": {
+    "node": ">=6"
+  },
+  "main": "index.js",
+  "scripts": {
+    "pretest": "npm install --no-optional",
+    "test": "mocha test/test.js",
+    "lint": "eslint .",
+    "fix-lint": "eslint --fix .",
+    "grunt-cover": "grunt test-with-coverage"
+  },
+  "dependencies": {
+    "adm-zip": "^0.4.11",
+    "multer": "^1.4.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "chai": "^3.4.1",
+    "chai-datetime": "^1.4.0",
+    "chai-things": "^0.2.0",
+    "chalk": "^1.1.1",
+    "eslint": "^4.10.0",
+    "grunt": "^1.0.0",
+    "grunt-banner": "^0.6.0",
+    "grunt-cli": "^1.0.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-jsbeautifier": "^0.2.12",
+    "grunt-mkdir": "^1.0.0",
+    "grunt-mocha-istanbul": "^5.0.2",
+    "grunt-mocha-test": "^0.13.2",
+    "istanbul": "0.4.1",
+    "loopback": "3.20.0",
+    "loopback-boot": "2.27.1",
+    "mocha": "^3.4.2",
+    "oe-cloud": "git+http://evgit/oec-next/oe-cloud.git#master",
+    "oe-connector-postgresql": "git+http://evgit/oec-next/oe-connector-postgresql.git#master",
+    "oe-multi-tenancy": "git+http://evgit/oec-next/oe-multi-tenancy.git#master",
+    "superagent-defaults": "^0.1.14",
+    "supertest": "^1.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@evgit:oec-next/oe-migration.git"
+  },
+  "keywords": [
+    "oe-migration",
+    "migration"
+  ],
+  "author": "Ajith Vasudevan",
+  "license": "MIT"
+}
