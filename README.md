@@ -84,7 +84,7 @@ The code snippets below show how steps 1 and 2 can be done:
        ...
        ...
        ...
-       <B>"oe-migration": "git+http://evgit/oecloud.io/oe-migration.git#master",</B>
+       <B>"oe-migration": "git+http://evgit/oec-next/oe-migration.git#master",</B>
        ...
        ...
 </pre>
@@ -184,25 +184,17 @@ then the records that existed in the table prior to the current db version migra
 2. Create a new js file, say, *migrate.js* in your `<PROJECT_ROOT>/server/` folder with the following contents:
 
     ```javascript
-    var oeApp = require('oe-cloud');
-    var path = require('path');
-    var loopback = oeApp.loopback;
-    var app = loopback();
-    var options = oeApp.options;
-    var log = require('oe-logger')('app.server');
-    app.locals.apphome = __dirname;
-    options.bootDirs.push(path.join(__dirname, 'boot'));
-    options.clientAppRootDir = __dirname;
-    process.env.IS_JOB_RUNNER=false;
-    
-    oeApp.boot(app, options,function(){
+    var app = require('oe-cloud');
+    app.boot(__dirname, function (err) {
+        if (err) { console.log(err); process.exit(1); }
+        
         var m = require('oe-migration');
         m.migrate(function(err, oldDbVersion, migratedVersions) {
             if(err) process.exit(1); else process.exit(0);
         });
     });
     ```
-    A ready-made file with the above content is available in the [CASSI bank / oe-demo-app](http://evgit/oecloud.io/oe-demo-app) sample project at https://evgit/oecloud.io/oe-demo-app/blob/master/server/migrate.js
+    A ready-made file with the above content is available in the [oe-app](http://evgit/oec-next/oe-app) sample project at https://evgit/oec-next/oe-app/blob/master/server/migrate.js
     You can copy this file to your `<PROJECT_ROOT>/server/` folder instead of creating a new file from scratch. 
     This file creation is a one-time activity, and the file itself can be part of your application.
 
@@ -220,7 +212,7 @@ then the records that existed in the table prior to the current db version migra
 **************************************************************************************
 Data Migration Started: Thu Oct 11 2018 12:59:57 GMT+0530 (India Standard Time)
 Migration options : {}
-Base Path for data: D:\myawesomeapp\db
+Base Path for data: D:\my-awesome-app\db
 Migrated 3 records to table MigrationTest1 for tenant default with 3 succeeding and 0 failing, from D:\my-awesome-app\db\3.3.0\default\migration-test1.json
 Migration done. DB updated to 3.3.0
 Previous DB Version: 3.2.0
@@ -237,19 +229,19 @@ These can be queried based on its fields `logType`, `model`, `dbVersion`, `tenan
 An example of MigrationLogs is shown below:
 
 ```bash
-{ "_id" : ObjectId("5bbf21226be2d91d28a37167"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default", "filePath" : "D:\\myawesomeapp\\db\\3.0.0\\default\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.134Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf21226be2d91d28a3716b"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default", "filePath" : "D:\\myawesomeapp\\db\\3.0.0\\default\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.176Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf21226be2d91d28a3716f"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default/tenant1", "filePath" : "D:\\myawesomeapp\\db\\3.0.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.218Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf21226be2d91d28a37173"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default/tenant1", "filePath" : "D:\\myawesomeapp\\db\\3.0.0\\tenant1\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.250Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf21226be2d91d28a37177"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default/tenant2", "filePath" : "D:\\myawesomeapp\\db\\3.0.0\\tenant2\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.288Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf21226be2d91d28a3717b"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default/tenant2", "filePath" : "D:\\myawesomeapp\\db\\3.0.0\\tenant2\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.339Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a3717c"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default", "filePath" : "D:\\myawesomeapp\\db\\3.2.0\\default\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.452Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a37180"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default", "filePath" : "D:\\myawesomeapp\\db\\3.2.0\\default\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.488Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a37183"), "logType" : "WARN", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\myawesomeapp\\db\\3.2.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.521Z"), "log" : { "message" : "The `MigrationTest1` instance is not valid. Details: `field2` can't be blank (value: undefined).", "data" : { "field1" : "tenant1-Rama2" } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a37185"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\myawesomeapp\\db\\3.2.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.537Z"), "log" : { "message" : { "total" : 4, "success" : 3, "failed" : 1 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a37189"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\myawesomeapp\\db\\3.2.0\\tenant1\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.572Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a3718d"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant2", "filePath" : "D:\\myawesomeapp\\db\\3.2.0\\tenant2\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.610Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a37191"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default/tenant2", "filePath" : "D:\\myawesomeapp\\db\\3.2.0\\tenant2\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.661Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a37167"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\default\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.134Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a3716b"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\default\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.176Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a3716f"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.218Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a37173"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\tenant1\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.250Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a37177"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\tenant2\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.288Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a3717b"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\tenant2\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.339Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a3717c"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\default\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.452Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a37180"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\default\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.488Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a37183"), "logType" : "WARN", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.521Z"), "log" : { "message" : "The `MigrationTest1` instance is not valid. Details: `field2` can't be blank (value: undefined).", "data" : { "field1" : "tenant1-Rama2" } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a37185"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.537Z"), "log" : { "message" : { "total" : 4, "success" : 3, "failed" : 1 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a37189"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\tenant1\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.572Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a3718d"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\tenant2\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.610Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a37191"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\tenant2\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.661Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
 { "_id" : ObjectId("5bbf22406be2d91d28a37192"), "logType" : "INFO", "model" : null, "dbVersion" : "3.2.0", "tenant" : null, "filePath" : null, "migrationDate" : ISODate("2018-10-11T10:13:20.695Z"), "log" : { "message" : "Migration done. DB updated to 3.2.0" } }
 
 ```

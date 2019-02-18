@@ -57,10 +57,10 @@ module.exports = function (app) {
 
 
     app.get('/uploadzip', function (req, res) {
-        var form = "<html><head><title>Upload ZIP file</title></head>";
+        var form = '<html><head><title>Upload ZIP file</title></head>';
         form += "<body><form action='/uploadzip' method='post' enctype='multipart/form-data'>";
         form += "Upload Zip File: <input type='file' name='import'> <input type='submit' name='upload' value='Upload'>";
-        form += "</form></body></html>";
+        form += '</form></body></html>';
         return res.send(form);
     });
 

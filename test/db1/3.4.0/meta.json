@@ -1,0 +1,17 @@
+{
+    "contexts": {
+        "/default": {
+            "id": 0,
+            "tenantId": "/default",
+            "remoteUser": "defaultuser"
+        }
+    },
+    "files": [{
+            "updateAttributes": true,
+            "model": "MigrationTest1",
+            "enabled": true,
+            "file": "default/migration-test1.json",
+            "ctxId": "/default"
+        }
+    ]
+}

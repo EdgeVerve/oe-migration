@@ -1,0 +1,23 @@
+{
+    "name": "MigrationTest4",
+    "base": "BaseEntity",
+    "idinjection": true,
+    "description": "This model is used to store migrated data for testing",
+    "options": {
+        "isFrameworkModel": false
+    },
+    "properties": {
+        "field1": "string",
+        "field2": { "type": "number", "required": true },
+        "field3": { "type": "string", "required": true, "default": "DEFAULT_VALUE" },
+        "field4": { "type": "number", "required": true, "default": 100 },
+        "field5": { "type": "invalid", "required": true }
+    },
+    "mixins": {
+        "MultiTenancyMixin": true
+    },
+    "autoscope" : ["tenantId"],
+    "validations": [],
+    "relations": {},
+    "methods": {}
+}

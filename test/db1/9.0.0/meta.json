@@ -1,0 +1,51 @@
+{
+    "contexts": {
+        "/default": {
+            "id": 0,
+            "tenantId": "/default",
+            "remoteUser": "defaultuser"
+        },
+       "/default/tenant2": {
+            "id": 2,
+            "tenantId": "/default/tenant2",
+            "remoteUser": "tenant2user"
+        }
+    },
+    "files": [{
+            "model": "MigrationTest1",
+            "enabled": true,
+            "file": "default/migration-test1.json",
+            "ctxId": "/default"
+        },
+        {
+            "model": "MigrationTest2",
+            "enabled": true,
+            "file": "default/migration-test2.json",
+            "ctxId": "/default"
+        },
+        {
+            "model": "MigrationTest1",
+            "enabled": true,
+            "file": "tenant1/migration-test1.json",
+            "ctxId": "/default/tenant1"
+        },
+        {
+            "model": "MigrationTest2",
+            "enabled": true,
+            "file": "tenant1/migration-test2.json",
+            "ctxId": "/default/tenant1"
+        },
+        {
+            "model": "MigrationTest1",
+            "enabled": true,
+            "file": "tenant2/migration-test1.json",
+            "ctxId": "/default/tenant2"
+        },
+        {
+            "model": "MigrationTest2",
+            "enabled": true,
+            "file": "tenant2/migration-test2.json",
+            "ctxId": "/default/tenant2"
+        }
+    ]
+}

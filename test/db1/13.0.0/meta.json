@@ -1,0 +1,9 @@
+{
+    "contexts": {
+        "/default": {
+            "id": 0,
+            "tenantId": "/default",
+            "remoteUser": "defaultuser"
+        }
+    }
+}

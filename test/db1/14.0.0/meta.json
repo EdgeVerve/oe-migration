@@ -1,0 +1,10 @@
+{
+    "clearTables": ["MigrationTest1", "MigrationTest2", "MigrationTest3"],
+    "contexts": {
+        "/default": {
+            "id": 0,
+            "tenantId": "/default",
+            "remoteUser": "defaultuser"
+        }
+    }
+}
