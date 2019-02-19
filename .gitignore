@@ -42,3 +42,4 @@ test/uploads/
 test/extracts/
 test/tmp/
 test/db/
+package-lock.json

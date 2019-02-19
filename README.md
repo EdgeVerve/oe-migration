@@ -33,7 +33,7 @@ This migration module has the following features:
 
 2. Allows loading of data from [JSON files present in project sub-folder](#bookmark2) to database
 
-3. Allows [versioned data migration](#bookmark2), with data-folder name as the DB version. (de-linked from app package version). 
+3. Allows [versioned data migration](#bookmark2), with data-folder name as the DB version. (de-linked from app package version).
 
 4. Re-running of migration script without adding any new data causes no harm
 
@@ -55,12 +55,12 @@ This migration module has the following features:
 <a name="Implementation"></a>
 ## Implementation
 The **oe-migration** module provides the infrastructure for catering to the above need. It is implemented as an **app-list**
-module for **oe-Cloud** based applications. 
-The module consists of a `lib/migration.js` file which exposes a `migrate()` function, which is the function to be called for performing a migration operation. 
+module for **oe-Cloud** based applications.
+The module consists of a `lib/migration.js` file which exposes a `migrate()` function, which is the function to be called for performing a migration operation.
 
-A `boot/migration-routes.js` file exposes the following HTTP API endpoints: 
+A `boot/migration-routes.js` file exposes the following HTTP API endpoints:
 
-- `/getzip` - for downloading existing data in the application database as a zip file, and 
+- `/getzip` - for downloading existing data in the application database as a zip file, and
 - `/uploadzip` - for uploading a zip file with data to the application database
 
 The module also adds a couple of new tables called `MigrationLog` and `SystemConfig` to the application. The former stores logs
@@ -70,10 +70,10 @@ of data migration and the latter holds the current DB version.
 ## Setup
 To get the *oe-migration* feature, the following changes need to be done in the *oe-Cloud* based application:
 
-1. This (**oe-migration**) module needs to be added as application  ``package.json`` dependency. 
+1. This (**oe-migration**) module needs to be added as application  ``package.json`` dependency.
 2. This module needs to be added to the `server/app-list.json` file in the app.
 
-The code snippets below show how steps 1 and 2 can be done: 
+The code snippets below show how steps 1 and 2 can be done:
 
 **package.json**  (only part of the file is shown here, with relevant section in **bold**):
 
@@ -84,7 +84,7 @@ The code snippets below show how steps 1 and 2 can be done:
        ...
        ...
        ...
-       <B>"oe-migration": "git+http://evgit/oec-next/oe-migration.git#master",</B>
+       <B>"oe-migration": "git+http://evgit/oecloud.io/oe-migration.git#master",</B>
        ...
        ...
 </pre>
@@ -122,62 +122,62 @@ This module can be used for the following purposes:
 Once the above changes are done to the application, the migration can be done as follows:
 
 <a name="bookmark2"></a>
- 0 . Place your data as **JSON files** and **meta.json** inside a "db" folder in the root of your application, as before (oeCloud version <1.6). The db version folder (e.g., 1.0.0, 1.2.0, etc.,) 
- naming should follow [semver convention](https://semver.org/). Basically, it should be in x.y.z format where x,y and z are integers. 
+ 0 . Place your data as **JSON files** and **meta.json** inside a "db" folder in the root of your application, as before (oeCloud version <1.6). The db version folder (e.g., 1.0.0, 1.2.0, etc.,)
+ naming should follow [semver convention](https://semver.org/). Basically, it should be in x.y.z format where x,y and z are integers.
 
    The folder structure inside the "db" folder should be as follows:
-   
+
 ```
-       
+
            PROJECT_ROOT/db-
                           |-1.0.0-
                           |      |
                           |      |-default-
                           |      |        |-Customer.json
                           |      |        |-Account.json
-                          |      |        
+                          |      |
                           |      |-tenant1-
                           |      |        |-Customer.json
                           |      |        |-Account.json
-                          |      |        
+                          |      |
                           |      |-meta.json
                           |      |
                           |      |-ddl-
                           |           |-customer.json
                           |           |-account.json
-                          |       
+                          |
                           |-1.2.0-
                           |      |
                           |      |-default-
                           |      |        |-Customer.json
-                          |      |        
+                          |      |
                           |      |-tenant1-
                           |      |        |-Account.json
-                          |      |        
+                          |      |
                           |      |-meta.json
                           |      |
                           |      |-ddl-
                           |           |-customer.json
-                          |       
+                          |
                           |-2.0.0-
                                  |
                                  |-default-
                                  |        |-Customer.json
-                                 |        
+                                 |
                                  |-tenant1-
                                  |        |-Account.json
-                                 |        
+                                 |
                                  |-meta.json
 
-    
-    
+
+
 ```
 <a name="bookmark2a"></a>
 As seen above, there is a new optional folder called `ddl` under each db version folder. This folder can contain one or more model definition JSON files in the loopback format.
 These model definitions, if present, would be used to refresh the corresponding table structures before commencement of migration for that particular version of database.
 **This feature allows for arbitrary structural changes in each db version that can be played back in case of new deployments at a later time.**
 
-Note: Using the **ddl** folder feature, if in a particular db version, a new **mandatory field** with a **default** value is added to a table, 
+Note: Using the **ddl** folder feature, if in a particular db version, a new **mandatory field** with a **default** value is added to a table,
 then the records that existed in the table prior to the current db version migration would be automatically updated with the default value in the newly added field.
 
 
@@ -187,15 +187,15 @@ then the records that existed in the table prior to the current db version migra
     var app = require('oe-cloud');
     app.boot(__dirname, function (err) {
         if (err) { console.log(err); process.exit(1); }
-        
+
         var m = require('oe-migration');
         m.migrate(function(err, oldDbVersion, migratedVersions) {
             if(err) process.exit(1); else process.exit(0);
         });
     });
     ```
-    A ready-made file with the above content is available in the [oe-app](http://evgit/oec-next/oe-app) sample project at https://evgit/oec-next/oe-app/blob/master/server/migrate.js
-    You can copy this file to your `<PROJECT_ROOT>/server/` folder instead of creating a new file from scratch. 
+    A ready-made file with the above content is available in the [oe-app](http://evgit/oecloud.io/oe-app) sample project at https://evgit/oecloud.io/oe-app/blob/master/server/migrate.js
+    You can copy this file to your `<PROJECT_ROOT>/server/` folder instead of creating a new file from scratch.
     This file creation is a one-time activity, and the file itself can be part of your application.
 
     **Note:** This file does not pass the `options` parameter to the `migrate()` function. However, it is possible to configure some aspects of migration if you pass the appropriate `options` object. See [**migrate() function**](#migrate function) under the [**Configuration**](#Configuration) section below, for details.
@@ -222,26 +222,26 @@ Data Migration completed in 0.069 sec
 Data Migration Ended: Thu Oct 11 2018 12:59:57 GMT+0530 (India Standard Time)
 
 **************************************************************************************
- 
+
 ```
 More detailed logs can be obtained by looking at the `MigrationLog` table. This is accessible over the standard *loopback* http API `/api/MigrationLogs`.
 These can be queried based on its fields `logType`, `model`, `dbVersion`, `tenant`, `filePath`, `migrationDate` and `log`
 An example of MigrationLogs is shown below:
 
 ```bash
-{ "_id" : ObjectId("5bbf21226be2d91d28a37167"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\default\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.134Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf21226be2d91d28a3716b"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\default\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.176Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf21226be2d91d28a3716f"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.218Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf21226be2d91d28a37173"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\tenant1\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.250Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf21226be2d91d28a37177"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\tenant2\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.288Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf21226be2d91d28a3717b"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.0.0\\tenant2\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.339Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a3717c"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\default\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.452Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a37180"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\default\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.488Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a37183"), "logType" : "WARN", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.521Z"), "log" : { "message" : "The `MigrationTest1` instance is not valid. Details: `field2` can't be blank (value: undefined).", "data" : { "field1" : "tenant1-Rama2" } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a37185"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.537Z"), "log" : { "message" : { "total" : 4, "success" : 3, "failed" : 1 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a37189"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\tenant1\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.572Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a3718d"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\tenant2\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.610Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
-{ "_id" : ObjectId("5bbf22406be2d91d28a37191"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oec-next\\oe-migration\\test\\db\\3.2.0\\tenant2\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.661Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a37167"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.0.0\\default\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.134Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a3716b"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.0.0\\default\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.176Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a3716f"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.0.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.218Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a37173"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.0.0\\tenant1\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.250Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a37177"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.0.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.0.0\\tenant2\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:08:34.288Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf21226be2d91d28a3717b"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.0.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.0.0\\tenant2\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:08:34.339Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a3717c"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.2.0\\default\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.452Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a37180"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.2.0\\default\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.488Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a37183"), "logType" : "WARN", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.2.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.521Z"), "log" : { "message" : "The `MigrationTest1` instance is not valid. Details: `field2` can't be blank (value: undefined).", "data" : { "field1" : "tenant1-Rama2" } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a37185"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.2.0\\tenant1\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.537Z"), "log" : { "message" : { "total" : 4, "success" : 3, "failed" : 1 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a37189"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default/tenant1", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.2.0\\tenant1\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.572Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a3718d"), "logType" : "INFO", "model" : "MigrationTest1", "dbVersion" : "3.2.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.2.0\\tenant2\\migration-test1.json", "migrationDate" : ISODate("2018-10-11T10:13:20.610Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
+{ "_id" : ObjectId("5bbf22406be2d91d28a37191"), "logType" : "INFO", "model" : "MigrationTest2", "dbVersion" : "3.2.0", "tenant" : "/default/tenant2", "filePath" : "D:\\oecloud.io\\oe-migration\\test\\db\\3.2.0\\tenant2\\migration-test2.json", "migrationDate" : ISODate("2018-10-11T10:13:20.661Z"), "log" : { "message" : { "total" : 3, "success" : 3, "failed" : 0 } } }
 { "_id" : ObjectId("5bbf22406be2d91d28a37192"), "logType" : "INFO", "model" : null, "dbVersion" : "3.2.0", "tenant" : null, "filePath" : null, "migrationDate" : ISODate("2018-10-11T10:13:20.695Z"), "log" : { "message" : "Migration done. DB updated to 3.2.0" } }
 
 ```
@@ -252,17 +252,17 @@ The `server/migrate.js` can be executed repeatedly with/without additional data 
 <a name="Downloading zip file of DB data"></a>
 ### Downloading zip file of DB data
 
-The **oe-migration** module exposes a http GET API, `/getzip`, for downloading data from all or a subset of tables in the application. 
+The **oe-migration** module exposes a http GET API, `/getzip`, for downloading data from all or a subset of tables in the application.
 
-The downloaded data is in the form of a zip file which contains *JSON data* files and a `meta.json` file. 
+The downloaded data is in the form of a zip file which contains *JSON data* files and a `meta.json` file.
 
-The file and data structure is compatible with the file and data structure required by the `migrate()` function. 
+The file and data structure is compatible with the file and data structure required by the `migrate()` function.
 
 The `/getzip` API can take the following optional query parameters:
 
 - `tableList` - Optional if *exportAllTables* is *true*. Value is a comma-separated list of table (model) names whose data needs to be exported as a zip file
 - `exportAllTables` - Optional if at least one table is specified in *tableList*. Value, if *true*, exports data from all tables, including framework model data
-- `excludeFrameworkTables` - Optional. To be used if *exportAllTables* is set to *true*. Value, if *true*, excludes data of framework models from the exported zip file 
+- `excludeFrameworkTables` - Optional. To be used if *exportAllTables* is set to *true*. Value, if *true*, excludes data of framework models from the exported zip file
 
 Some example usages of this API is as follows:
 
@@ -271,7 +271,7 @@ http://<app_host>:<app_port>/getzip?tableList=Currency,Account                  
 
 http://<app_host>:<app_port>/getzip?exportAllTables=true                                         // Exports data of all tables
 
-http://<app_host>:<app_port>/getzip?exportAllTables=true&excludeFrameworkTables=true             // Exports data of all tables except framework tables like Role, etc.,        
+http://<app_host>:<app_port>/getzip?exportAllTables=true&excludeFrameworkTables=true             // Exports data of all tables except framework tables like Role, etc.,
 
 http://<app_host>:<app_port>/getzip?exportAllTables=true&excludeFrameworkTables&tableList=Role   // Exports data of all tables except framework tables, additionally
                                                                                                  // include the framework table 'Role'
@@ -291,11 +291,11 @@ file should be as follows:
      |-default-
      |        |-Customer.json
      |        |-Account.json
-     |        
+     |
      |-tenant1-
      |        |-Customer.json
      |        |-Account.json
-     |        
+     |
      |-meta.json
 </pre>
 
@@ -312,7 +312,7 @@ Only one zip file is allowed at a time, to be uploaded.
 ## Configuration
 The migration configuration is done through -
 
-1. the `<PROJECT_ROOT>/db/<version>/meta.json` and 
+1. the `<PROJECT_ROOT>/db/<version>/meta.json` and
 2. the `options` argument of the module's `migrate()` function
 
 <a name="meta.json"></a>
@@ -327,7 +327,7 @@ For e.g., one project could have the following files for each of the db versions
 <PROJECT_DIR>/db/2.0.0/meta.json
 ```
 <a name="bookmark6"></a>
-Each of these `meta.json` files define the contexts and data file details for its corresponding DB version migration. In addition, the `meta.json` can also optionally configure - 
+Each of these `meta.json` files define the contexts and data file details for its corresponding DB version migration. In addition, the `meta.json` can also optionally configure -
 - whether all tables or specified tables are cleared or not before migration
 - whether oeCloud validations are skipped for migration or not
 - whether the json data is to be used to do an updateAttributes instead of an upsert or not
@@ -341,46 +341,46 @@ The structure of the `meta.json` file along with these configuration parameters,
     "clearTables": true,    // Optional property, value can be boolean or string array of table names. Default: false
                             // 'true' - clears all tables in the 'files' section of this file before starting to migrate
                             // [array of table names] - clears specified tables before starting to migrate
-    
+
     "contexts": {           // Contexts to use for migration
-    
+
         "/default": {                     // context-key is a slash-separated string starting with '/default'
             "id": 0,                      // 'id' value is a running serial number
-            "tenantId": "/default",       // 'tenantId' value is the same as the context-key 
+            "tenantId": "/default",       // 'tenantId' value is the same as the context-key
             "remoteUser": "defaultuser"   // 'remoteUser' user as whom the migration is done
         },
-        
-        "/default/tenant1": {             
+
+        "/default/tenant1": {
             "id": 1,
             "tenantId": "/default/tenant1",
             "remoteUser": "tenant1user"
         }
-        
+
     },
-     
+
     "files": [
-        {                 
+        {
             "skipValidation": true,           // Optional property, value is boolean. Default: false
                                               // If true, skips oeCloud validation during migration of this file
-                                              
+
             "updateAttributes": true,         // Optional property, value is boolean. Default: false
                                               // If true, does an updateAttributes instead of an upsert for this file.
                                               // If this is set to true, the json data needs to have an 'id' field for each
                                               // record. Alternatively, the 'key' property (see below) needs to be specified.
-                                              
-            "key": "field2",                  // Optional property. Value is a string fieldname. Used in conjunction with 
-                                              // "updateAttributes" (see above) Specifies a unique field other than 'id' to be 
+
+            "key": "field2",                  // Optional property. Value is a string fieldname. Used in conjunction with
+                                              // "updateAttributes" (see above) Specifies a unique field other than 'id' to be
                                               // used as PK for performing updateAttributes using data in this file.
-                                              
+
             "model": "Customer",              // Mandatory property. The model name to use for this file's migration
-            
+
             "enabled": true,                  // Optional property. If false, skips migration from this file. Default: true
-            
+
             "file": "default/customer.json",  // Mandatory property. Relative path under "db" folder to the json file's location
-            
+
             "ctxId": "/default"               // Mandatory property. Should match one of the keys under "contexts"
         },
-        
+
         {
             "model": "Account",
             "enabled": true,
@@ -397,8 +397,8 @@ The structure of the `meta.json` file along with these configuration parameters,
 
 The **oe-migration** module exposes the `migrate(options, cb)` function, which takes the following 2 arguments -
 
-- an `options` object and 
-- a callback function, `cb`, 
+- an `options` object and
+- a callback function, `cb`,
 
 both of which are optional.
 
@@ -406,18 +406,18 @@ The `options` object can have the following properties, illustrated with an exam
 
 ```js
 {
-    force: true,             // Optional. If true, repeats migration from all db versions present in "db" folder,  
+    force: true,             // Optional. If true, repeats migration from all db versions present in "db" folder,
                              // ignoring the last version that was migrated (last version being in SystemConfig table)
-                             
-    fromVersion: '2.0.0',    // Optional. When used with force: true, sets the starting db version for 
+
+    fromVersion: '2.0.0',    // Optional. When used with force: true, sets the starting db version for
                              // forced migration. Default: '0.0.0'
-                             
-    toVersion: '4.0.0'       // Optional. When used with force: true, sets the ending db version for 
+
+    toVersion: '4.0.0'       // Optional. When used with force: true, sets the ending db version for
                              // forced migration. Default: last available version in "db" folder
-                             
-    verbose: true            // Optional. Prints additional info to the console during migration, for   
+
+    verbose: true            // Optional. Prints additional info to the console during migration, for
                              // e.g., record level errors (which are captured in MigrationLogs table irrespective of this option)
-    
+
 }
 
 ```
@@ -429,7 +429,7 @@ The callback function has the following arguments:
 
 ```
 function cb(err, oldDbVersion, data) {
-    
+
 }
 ```
 
