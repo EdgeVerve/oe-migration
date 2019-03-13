@@ -84,7 +84,7 @@ The code snippets below show how steps 1 and 2 can be done:
        ...
        ...
        ...
-       <B>"oe-migration": "git+http://evgit/oecloud.io/oe-migration.git#2.0.0",</B>
+       <B>"oe-migration": "git+https://github.com/EdgeVerve/oe-migration.git#2.0.0",</B>
        ...
        ...
 </pre>
@@ -194,8 +194,6 @@ then the records that existed in the table prior to the current db version migra
         });
     });
     ```
-    A ready-made file with the above content is available in the [oe-app](http://evgit/oecloud.io/oe-app) sample project at https://evgit/oecloud.io/oe-app/blob/master/server/migrate.js
-    You can copy this file to your `<PROJECT_ROOT>/server/` folder instead of creating a new file from scratch.
     This file creation is a one-time activity, and the file itself can be part of your application.
 
     **Note:** This file does not pass the `options` parameter to the `migrate()` function. However, it is possible to configure some aspects of migration if you pass the appropriate `options` object. See [**migrate() function**](#migrate function) under the [**Configuration**](#Configuration) section below, for details.
