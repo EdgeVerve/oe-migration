@@ -19,5 +19,6 @@
     "autoscope" : ["tenantId"],
     "validations": [],
     "relations": {},
-    "methods": {}
+    "methods": {},
+    "migrationCtxId": "/default/tenant1"
 }
