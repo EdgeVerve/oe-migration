@@ -252,7 +252,7 @@ The `server/migrate.js` can be executed repeatedly with/without additional data 
 <a name="Running Custom JS files"></a>
 In cases where migration needs additional complex logic to be executed, you can wrap the `migrate` call in custom javascript module callback.
 
-    ```javascript
+```javascript
     var app = require('oe-cloud');
     var preMigrate = require('some/path/pre-migrate.js');
     var postMigrate = require('some/path/post-migrate.js');
@@ -270,7 +270,7 @@ In cases where migration needs additional complex logic to be executed, you can 
             });
         }
     });
-    ```
+```
 
 You must ensure the rerunnability of your custom javascript code for a rerunnable migration.
 
