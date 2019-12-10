@@ -5,9 +5,9 @@
 - [Setup](#Setup)<BR>
 - [Usage](#Usage)<BR>
     - [Migration from Command-Line](#Migration from Command-Line)<BR>
+    - [Running Custom JS files](#Running Custom JS files)<BR>
     - [Downloading zip file of DB data](#Downloading zip file of DB data)<BR>
     - [Uploading zip file for migration](#Uploading zip file for migration)<BR>
-    - [Running Custom JS files](#Running Custom JS files)<BR>
 - [Configuration](#Configuration)
     - [meta.json](#meta.json)
     - [migrate() function](#migrate function)
@@ -250,6 +250,8 @@ An example of MigrationLogs is shown below:
 The `server/migrate.js` can be executed repeatedly with/without additional data in the `<server>/db` folder.
 
 <a name="Running Custom JS files"></a>
+### Running Custom JS files
+
 In cases where migration needs additional complex logic to be executed, you can wrap the `migrate` call in custom javascript module callback.
 
 ```javascript
