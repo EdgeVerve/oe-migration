@@ -313,7 +313,7 @@ For this to work,
     return appListBasePaths;
     }
     ```
-    A ready-made file with the above content is available in the [oe-app](http://evgit/oecloud.io/oe-demo-app) sample project at https://evgit/oecloud.io/oe-app/blob/master/server/migrate-all.js
+    A ready-made file with the above content is available in the [oe-demo-app](http://evgit/oecloud.io/oe-demo-app) sample project at https://evgit/oecloud.io/oe-demo-app/blob/master/server/migrate-all.js
     You can copy this file to your `<PROJECT_ROOT>/server/` folder instead of creating a new file from scratch.
     This file creation is a one-time activity, and the file itself can be part of your application.
 
@@ -511,6 +511,10 @@ The `options` object can have the following properties, illustrated with an exam
 {
     basePath: '/data/db',    // Optional String. Specifies the absolute path to a folder to be used as the "db" folder.
                              // Default value is the "db" folder at the root of the oeCloud application.
+
+    moduleName: 'my-app',    // Optional String. Specifies the name of the module/app for which this migration is done.
+                             // Default value is "./", the same string that is specified for "current application" in app-list.json.
+                             // This is used by oe-migration as a key to maintain the latest DB migration version in th SystemConfig table. 
 
     force: true,             // Optional. If true, repeats migration from all db versions present in "db" folder,
                              // ignoring the last version that was migrated (last version being in SystemConfig table)
