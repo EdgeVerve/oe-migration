@@ -272,45 +272,47 @@ For this to work,
     var m = require('oe-migration');
     var path = require('path');
     var fs = require('fs');
-
+    
     app.boot(__dirname, function (err) {
-    if (err) { console.log(err); process.exit(1); }
-
-    var appListBasePaths = getAppListBasePaths();
-
-    async.eachOfSeries(appListBasePaths, function (basePath, key, cb) {
-        m.migrate({ basePath: basePath }, function (err, oldDbVersion, migratedVersions) {
-        cb(err);
+      if (err) { console.log(err); process.exit(1); }
+    
+      var appList = getAppList();
+    
+      async.eachOfSeries(appList, function (mdl, key, cb) {
+        m.migrate({ moduleName: mdl.moduleName, basePath: mdl.basePath }, function (err, oldDbVersion, migratedVersions) {
+          cb(err);
         });
-    }, function (err) {
+      }, function (err) {
         if (err) {
-        console.log(err);
-        process.exit(1);
+          console.log(err);
+          process.exit(1);
         } else {
-        console.log('migration done');
-        process.exit(0);
+          console.log('migration done');
+          process.exit(0);
         }
+      });
     });
-    });
-
-
-    function getAppListBasePaths() {
-    var appListBasePaths = [];
-    var mdls = require('../server/app-list.json');
-    mdls.forEach(function (o) {
+    
+    
+    function getAppList() {
+      var appList = [];
+      var mdls = require('../server/app-list.json');
+      mdls.forEach(function (o) {
         var bPath;
         if (o.path === './')  {
-        bPath = path.resolve(process.cwd(), 'db');
+          bPath = path.resolve(process.cwd(), 'db');
         } else {
-        bPath = path.resolve(process.cwd(), 'node_modules', o.path, 'db');
+          bPath = path.resolve(process.cwd(), 'node_modules', o.path, 'db');
         }
         var isDir = false;
         try {
-        isDir = fs.statSync(bPath).isDirectory();
-        if (isDir === true) appListBasePaths.push(bPath);
-        } catch (e) {}
-    });
-    return appListBasePaths;
+          isDir = fs.statSync(bPath).isDirectory();
+          if (isDir === true) appList.push({ moduleName: o.path, basePath: bPath});
+        } catch (e) {
+          if (e) console.log('Ignoring module', o.path, ' : No db folder');
+        }
+      });
+      return appList;
     }
     ```
     A ready-made file with the above content is available in the [oe-demo-app](http://evgit/oecloud.io/oe-demo-app) sample project at https://evgit/oecloud.io/oe-demo-app/blob/master/server/migrate-all.js
