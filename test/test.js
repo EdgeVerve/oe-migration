@@ -709,7 +709,7 @@ describe(chalk.blue('oe-migration tests'), function (done) {
         clearMigrationTestTables(function () {
             deleteMigrationLog(function () {
                 migration.migrate(options, function (err, oldDbVersion, data) {
-                    expect(oldDbVersion).to.be.null;
+                    expect(oldDbVersion).to.equal('15.0.0');
                     expect(data.migratedVersions).to.eql(['20.0.0']);
                     done();
                 });
@@ -1082,7 +1082,7 @@ describe(chalk.blue('oe-migration tests'), function (done) {
                 copyRecursiveSync(path.join(process.cwd(), 'test', 'db1', '24.0.0'), path.join(basePath, '24.0.0'));
 
                 migration.migrate(options, function (err, oldDbVersion, data) {
-                    expect(oldDbVersion).to.equal('15.0.0');
+                    expect(oldDbVersion).to.equal('21.0.0');
                     expect(data.migratedVersions).to.eql(['24.0.0']);
                     done();
                 });

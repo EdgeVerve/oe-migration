@@ -32,25 +32,28 @@ This migration module has the following features:
 
 1. App list module - This module is built as an [app-list module](#bookmark0) which can be added to the application on a need basis.
 
-2. Allows loading of data from [JSON files present in project sub-folder](#bookmark2) to database
+2. Allows loading of data from [JSON files present in a project sub-folder](#bookmark2) or any other folder, to database
 
-3. Allows [versioned data migration](#bookmark2), with data-folder name as the DB version. (de-linked from app package version).
+3. Allows loading of data from [JSON files present in the project's app-list modules](#bookmark2b), to database
 
-4. Re-running of migration script without adding any new data causes no harm
+4. Allows [versioned data migration](#bookmark2), with data-folder name as the DB version. (de-linked from app package version).
 
-5. Migration can be [triggered via a standalone command](#bookmark1) at the command prompt (node server/migratejs)
+5. Re-running of migration script without adding any new data causes no harm
 
-6. Allows sequential DDL/DML changes:
+6. Migration can be [triggered via a standalone command](#bookmark1) at the command prompt (node server/migratejs)
+
+7. Allows sequential DDL/DML changes:
     - [Allows writing version-specific meta-data](#bookmark2) (model definitions) to specify structural changes to tables
     - Auto [populate default data](#bookmark2a) in existing records for a new column
 
-7. Has an [option to download the existing data](#bookmark3) in the DB (arbitrary list of tables, or all tables) as a zip file
-8. Allows migration of data over http as a [zip file upload](#bookmark4)
-9. Allows [download of migration logs](#bookmark5) over http (logs persisted in MigrationLogs table)
-10. Has option to [skip oeCloud Validations](#bookmark6) during migration
-11. Has option to [use updateAttributes instead of upsert](#bookmark6) during migration
-12. Has option to [clear the data in one or more tables](#bookmark6) before commencing data migration.
-13. Has option to [rollback](#bookmark6a) to a previous db version
+8. Has an [option to download the existing data](#bookmark3) in the DB (arbitrary list of tables, or all tables) as a zip file
+9. Allows migration of data over http as a [zip file upload](#bookmark4)
+10. Allows [download of migration logs](#bookmark5) over http (logs persisted in MigrationLogs table)
+11. Has option to [skip oeCloud Validations](#bookmark6) during migration
+12. Has option to [use updateAttributes instead of upsert](#bookmark6) during migration
+13. Has option to [clear the data in one or more tables](#bookmark6) before commencing data migration.
+14. Has option to [rollback](#bookmark6a) to a previous db version
+15. Allows [execution of custom JS files](#Running Custom JS files) pre- and/or post- migration.
 
 <a name="bookmark0"></a>
 <a name="Implementation"></a>
@@ -113,7 +116,8 @@ The code snippets below show how steps 1 and 2 can be done:
 ## Usage
 This module can be used for the following purposes:
 
-- Migration from Command-Line
+- Migration of application seed data from Command-Line
+- Migration of app-list module's seed data from Command-Line
 - Downloading zip file of DB data
 - Uploading zip file for migration
 
@@ -248,6 +252,77 @@ An example of MigrationLogs is shown below:
 ```
 
 The `server/migrate.js` can be executed repeatedly with/without additional data in the `<server>/db` folder.
+
+
+
+<a name="bookmark2b"></a>
+### Migration of app-list module seed data
+
+*oe-migration* supports the migration of *app-list* modules by leveraging the `options.basePath` parameter of the `migrate()` function.
+
+For this to work, 
+
+1. Each *app-list* module should have its own seed-data in a folder named `db` at the module's root.
+2. Create and run a new js file, say, *migrate-all.js* in your `<PROJECT_ROOT>/server/` folder with the following contents:
+
+    ```javascript
+
+    var app = require('oe-cloud');
+    var async = require('async');
+    var m = require('oe-migration');
+    var path = require('path');
+    var fs = require('fs');
+
+    app.boot(__dirname, function (err) {
+    if (err) { console.log(err); process.exit(1); }
+
+    var appListBasePaths = getAppListBasePaths();
+
+    async.eachOfSeries(appListBasePaths, function (basePath, key, cb) {
+        m.migrate({ basePath: basePath }, function (err, oldDbVersion, migratedVersions) {
+        cb(err);
+        });
+    }, function (err) {
+        if (err) {
+        console.log(err);
+        process.exit(1);
+        } else {
+        console.log('migration done');
+        process.exit(0);
+        }
+    });
+    });
+
+
+    function getAppListBasePaths() {
+    var appListBasePaths = [];
+    var mdls = require('../server/app-list.json');
+    mdls.forEach(function (o) {
+        var bPath;
+        if (o.path === './')  {
+        bPath = path.resolve(process.cwd(), 'db');
+        } else {
+        bPath = path.resolve(process.cwd(), 'node_modules', o.path, 'db');
+        }
+        var isDir = false;
+        try {
+        isDir = fs.statSync(bPath).isDirectory();
+        if (isDir === true) appListBasePaths.push(bPath);
+        } catch (e) {}
+    });
+    return appListBasePaths;
+    }
+    ```
+    A ready-made file with the above content is available in the [oe-app](http://evgit/oecloud.io/oe-demo-app) sample project at https://evgit/oecloud.io/oe-app/blob/master/server/migrate-all.js
+    You can copy this file to your `<PROJECT_ROOT>/server/` folder instead of creating a new file from scratch.
+    This file creation is a one-time activity, and the file itself can be part of your application.
+
+**Notes:**
+
+1. The above script, when run, does the migration of data in the `db` folders from each *app-list* module, in the order in which the module is specified in the application's `app-list.json` file.
+2. The above script also migrates the main application's `db` folder, again, as per the order of the `./` module specified in `app-list.json`
+3. The application developer is free to modify the sample migrate-all.js file to meet the applicatio's needs. For example, the developer could choose not to migrate data from one or more app-list modules, change the location from where data is migrated, etc.,
+
 
 <a name="Running Custom JS files"></a>
 ### Running Custom JS files
@@ -434,13 +509,16 @@ The `options` object can have the following properties, illustrated with an exam
 
 ```js
 {
+    basePath: '/data/db',    // Optional String. Specifies the absolute path to a folder to be used as the "db" folder.
+                             // Default value is the "db" folder at the root of the oeCloud application.
+
     force: true,             // Optional. If true, repeats migration from all db versions present in "db" folder,
                              // ignoring the last version that was migrated (last version being in SystemConfig table)
 
     fromVersion: '2.0.0',    // Optional. When used with force: true, sets the starting db version for
                              // forced migration. Default: '0.0.0'
 
-    toVersion: '4.0.0'       // Optional. When used with force: true, sets the ending db version for
+    toVersion: '4.0.0',      // Optional. When used with force: true, sets the ending db version for
                              // forced migration. Default: last available version in "db" folder
 
     verbose: true            // Optional. Prints additional info to the console during migration, for
