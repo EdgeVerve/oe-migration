@@ -118,9 +118,7 @@ describe(chalk.blue('oe-migration tests'), function (done) {
     // This function deletes all records in the MasterJobExecutorTestData table
     function clearTestData(cb) {
         var TAG = 'clearTestData:';
-        SystemConfig.remove({
-            key: 'dbVersion'
-        }, opts, function findCb(err, res) {
+        SystemConfig.remove({ }, opts, function findCb(err, res) {
             if (err) {
                 console.error(TAG, 'Could not remove dbVersion record from SystemConfig ' + JSON.stringify(err));
                 cb(err);
@@ -240,10 +238,9 @@ describe(chalk.blue('oe-migration tests'), function (done) {
         console.log(chalk.yellow('[' + new Date().toISOString() + ']      : ', 'Starting ' + TAG));
         var options = {};
         migration.migrate(options, function (err, oldDbVersion, data) {
-            expect(err).not.to.be.null;
+            expect(err).to.be.null;
             expect(oldDbVersion).to.equal('2.5.0');
             expect(data.migratedVersions).to.be.null;
-            expect(err.message).to.equal('No (new) directories matched for migration. Nothing migrated.');
             done();
         });
     });
@@ -314,10 +311,9 @@ describe(chalk.blue('oe-migration tests'), function (done) {
         console.log(chalk.yellow('[' + new Date().toISOString() + ']      : ', 'Starting ' + TAG));
         var options = {};
         migration.migrate(options, function (err, oldDbVersion, data) {
-            expect(err).not.to.be.null;
+            expect(err).to.be.null;
             expect(data.migratedVersions).to.be.null;
             expect(oldDbVersion).to.equal('2.5.0');
-            expect(err.message).to.equal('No (new) directories matched for migration. Nothing migrated.');
             done();
         });
     });
@@ -620,8 +616,7 @@ describe(chalk.blue('oe-migration tests'), function (done) {
         console.log(chalk.yellow('[' + new Date().toISOString() + ']      : ', 'Starting ' + TAG));
         migration.setBasePath(null);  // Setting it back to default
         migration.migrate(function (err, oldDbVersion, data) {
-            expect(err).not.to.be.null;
-            expect(err.message).to.equal('No (new) directories matched for migration. Nothing migrated.');
+            expect(err).to.be.null;
             expect(oldDbVersion).to.equal('13.0.0');
             expect(data.migratedVersions).to.be.null;
             done();
@@ -714,7 +709,7 @@ describe(chalk.blue('oe-migration tests'), function (done) {
         clearMigrationTestTables(function () {
             deleteMigrationLog(function () {
                 migration.migrate(options, function (err, oldDbVersion, data) {
-                    expect(oldDbVersion).to.equal('15.0.0');
+                    expect(oldDbVersion).to.be.null;
                     expect(data.migratedVersions).to.eql(['20.0.0']);
                     done();
                 });
@@ -1087,7 +1082,7 @@ describe(chalk.blue('oe-migration tests'), function (done) {
                 copyRecursiveSync(path.join(process.cwd(), 'test', 'db1', '24.0.0'), path.join(basePath, '24.0.0'));
 
                 migration.migrate(options, function (err, oldDbVersion, data) {
-                    expect(oldDbVersion).to.equal('21.0.0');
+                    expect(oldDbVersion).to.equal('15.0.0');
                     expect(data.migratedVersions).to.eql(['24.0.0']);
                     done();
                 });
