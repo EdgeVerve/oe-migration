@@ -323,8 +323,8 @@ For this to work,
 
 1. The above script, when run, does the migration of data in the `db` folders from each *app-list* module, in the order in which the module is specified in the application's `app-list.json` file.
 2. The above script also migrates the main application's `db` folder, again, as per the order of the `./` module specified in `app-list.json`
-3. The application developer is free to modify the sample migrate-all.js file to meet the applicatio's needs. For example, the developer could choose not to migrate data from one or more app-list modules, change the location from where data is migrated, etc.,
-
+3. The application developer is free to modify the sample migrate-all.js file to meet the application's needs. For example, the developer could choose not to migrate data from one or more app-list modules, change the location from where data is migrated, etc.,
+4. While modifying the *migrate-all.js* script, keep in mind the `moduleName` option of `migrate()` function. This is used by *oe-migration* as a key to maintain the latest DB migration version in the *SystemConfig* table. This should be set as the name of the module whose data is being migrated. If the module is the main application itself, `moduleName` can be omitted or set to the default value, `./`
 
 <a name="Running Custom JS files"></a>
 ### Running Custom JS files
@@ -516,7 +516,7 @@ The `options` object can have the following properties, illustrated with an exam
 
     moduleName: 'my-app',    // Optional String. Specifies the name of the module/app for which this migration is done.
                              // Default value is "./", the same string that is specified for "current application" in app-list.json.
-                             // This is used by oe-migration as a key to maintain the latest DB migration version in th SystemConfig table. 
+                             // This is used by oe-migration as a key to maintain the latest DB migration version in the SystemConfig table. 
 
     force: true,             // Optional. If true, repeats migration from all db versions present in "db" folder,
                              // ignoring the last version that was migrated (last version being in SystemConfig table)
