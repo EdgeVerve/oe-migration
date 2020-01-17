@@ -17,7 +17,7 @@
 <a name="Need"></a>
 ## Need
 Applications often need to load seed data into their databases before they can go live.
-This data could be inserts, updates (whole record replacement) or updateAttributes (replacement of one or more field data).
+This data could be inserts, updates (whole record replacement) or updateAttributes (replacement of one or more field data). Data may also need to be processed and loaded into the DB by application-specific JS files.
 
 They may also need to load incremental amounts of data from time to time after go-live, incorporating any structural changes to the tables.
 
@@ -36,24 +36,26 @@ This migration module has the following features:
 
 3. Allows loading of data from [JSON files present in the project's app-list modules](#bookmark2b), to database
 
-4. Allows [versioned data migration](#bookmark2), with data-folder name as the DB version. (de-linked from app package version).
+4. Allows execution of JS files for custom processing and migration to database
 
-5. Re-running of migration script without adding any new data causes no harm
+5. Allows [versioned data migration](#bookmark2), with data-folder name as the DB version. (de-linked from app package version).
 
-6. Migration can be [triggered via a standalone command](#bookmark1) at the command prompt (node server/migratejs)
+6. Re-running of migration script without adding any new data causes no harm
 
-7. Allows sequential DDL/DML changes:
+7. Migration can be [triggered via a standalone command](#bookmark1) at the command prompt (node server/migratejs)
+
+8. Allows sequential DDL/DML changes:
     - [Allows writing version-specific meta-data](#bookmark2) (model definitions) to specify structural changes to tables
     - Auto [populate default data](#bookmark2a) in existing records for a new column
 
-8. Has an [option to download the existing data](#bookmark3) in the DB (arbitrary list of tables, or all tables) as a zip file
-9. Allows migration of data over http as a [zip file upload](#bookmark4)
-10. Allows [download of migration logs](#bookmark5) over http (logs persisted in MigrationLogs table)
-11. Has option to [skip oeCloud Validations](#bookmark6) during migration
-12. Has option to [use updateAttributes instead of upsert](#bookmark6) during migration
-13. Has option to [clear the data in one or more tables](#bookmark6) before commencing data migration.
-14. Has option to [rollback](#bookmark6a) to a previous db version
-15. Allows [execution of custom JS files](#Running Custom JS files) pre- and/or post- migration.
+9. Has an [option to download the existing data](#bookmark3) in the DB (arbitrary list of tables, or all tables) as a zip file
+10. Allows migration of data over http as a [zip file upload](#bookmark4)
+11. Allows [download of migration logs](#bookmark5) over http (logs persisted in MigrationLogs table)
+12. Has option to [skip oeCloud Validations](#bookmark6) during migration
+13. Has option to [use updateAttributes instead of upsert](#bookmark6) during migration
+14. Has option to [clear the data in one or more tables](#bookmark6) before commencing data migration.
+15. Has option to [rollback](#bookmark6a) to a previous db version
+16. Allows [execution of custom JS files](#Running Custom JS files) pre- and/or post- migration.
 
 <a name="bookmark0"></a>
 <a name="Implementation"></a>
@@ -140,10 +142,12 @@ Once the above changes are done to the application, the migration can be done as
                           |      |-default-
                           |      |        |-Customer.json
                           |      |        |-Account.json
+                          |      |        |-custom-script-1.js
                           |      |
                           |      |-tenant1-
                           |      |        |-Customer.json
                           |      |        |-Account.json
+                          |      |        |-custom-script-2.js
                           |      |
                           |      |-meta.json
                           |      |
@@ -158,6 +162,7 @@ Once the above changes are done to the application, the migration can be done as
                           |      |
                           |      |-tenant1-
                           |      |        |-Account.json
+                          |      |        |-custom-script-3.js
                           |      |
                           |      |-meta.json
                           |      |
@@ -171,6 +176,7 @@ Once the above changes are done to the application, the migration can be done as
                                  |
                                  |-tenant1-
                                  |        |-Account.json
+                                 |        |-custom-script-4.js
                                  |
                                  |-meta.json
 
@@ -199,11 +205,11 @@ then the records that existed in the table prior to the current db version migra
         });
     });
     ```
-    A ready-made file with the above content is available in the [oe-app](http://evgit/oecloud.io/oe-app) sample project at https://evgit/oecloud.io/oe-app/blob/master/server/migrate.js
+    A ready-made file with the above content is available in the [oe-demo-app](http://evgit/oecloud.io/oe-demo-app) sample project at https://evgit/oecloud.io/oe-demo-app/blob/master/server/migrate.js
     You can copy this file to your `<PROJECT_ROOT>/server/` folder instead of creating a new file from scratch.
     This file creation is a one-time activity, and the file itself can be part of your application.
 
-    **Note:** This file does not pass the `options` parameter to the `migrate()` function. However, it is possible to configure some aspects of migration if you pass the appropriate `options` object. See [**migrate() function**](#migrate function) under the [**Configuration**](#Configuration) section below, for details.
+    **Note:** This sample file does not pass the `options` parameter to the `migrate()` function. However, it is possible to configure some aspects of migration if you pass the appropriate `options` object. See [**migrate() function**](#migrate function) under the [**Configuration**](#Configuration) section below, for details.
 <a name="bookmark1"></a>
 3. From a command prompt at the root of your application, run the following:
 
@@ -329,29 +335,36 @@ For this to work,
 <a name="Running Custom JS files"></a>
 ### Running Custom JS files
 
-In cases where migration needs additional complex logic to be executed, you can wrap the `migrate` call in custom javascript module callback.
+*oe-migration* supports running arbitrary JS files in addition to loading data from json files. These files are to be placed and configured similar to how this is done for json files, in `meta.json`. See [Configuration](#Configuration) for details. 
+JS files are run by *oe-migration* in the order it appears in `meta.json`.
+
+The JS files that should be run as part of migration need to use the following standard:
+
+1. The JS file/script needs to export a single function
+2. The exported function needs to have the following 2 arguments -
+
+    a) opts - This Object would contain the context as defined in `meta.json`  
+    b) cb   - This is a callback function that needs to be called from within the script to signal the end of processing in the script. 
+3. The callback function may be called with an error object. This will halt the migration.
+4. Failure to call `cb()` would cause the migration process to wait indefinitely.
+
+An example JS file is shown below:
 
 ```javascript
-    var app = require('oe-cloud');
-    var preMigrate = require('some/path/pre-migrate.js');
-    var postMigrate = require('some/path/post-migrate.js');
-    app.boot(__dirname, function (err) {
-        if (err) { console.log(err); process.exit(1); }
 
-        var m = require('oe-migration');
-        preMigrate('arguments', function(err, data) {
-            if(err) process.exit(1);
-            m.migrate(function(err, oldDbVersion, migratedVersions) {
-                if(err) process.exit(1);
-                postMigrate('arguments', function(err, data){
-                    if(err) process.exit(1); else process.exit(0);   
-                }
-            });
-        }
-    });
+module.exports = function(opts, cb) {
+	console.log(opts);  // contains the ctx as specified in meta.json
+	// do processing
+	// more processing
+	
+	cb(err);    // err should be undefined or null if all is well.
+	            // Otherwise migration is halted.
+	
+}
+
 ```
 
-You must ensure the rerunnability of your custom javascript code for a rerunnable migration.
+
 
 <a name="bookmark3"></a>
 <a name="Downloading zip file of DB data"></a>
@@ -432,7 +445,7 @@ For e.g., one project could have the following files for each of the db versions
 <PROJECT_DIR>/db/2.0.0/meta.json
 ```
 <a name="bookmark6"></a>
-Each of these `meta.json` files define the contexts and data file details for its corresponding DB version migration. In addition, the `meta.json` can also optionally configure -
+Each of these `meta.json` files define the contexts and data file/JS script details for its corresponding DB version migration. In addition, the `meta.json` can also optionally configure -
 - whether all tables or specified tables are cleared or not before migration
 - whether oeCloud validations are skipped for migration or not
 - whether the json data is to be used to do an updateAttributes instead of an upsert or not
@@ -465,23 +478,23 @@ The structure of the `meta.json` file along with these configuration parameters,
 
     "files": [
         {
-            "skipValidation": true,           // Optional property, value is boolean. Default: false
+            "skipValidation": true,           // Optional property, value is boolean. Default: false. Ignored if file is JS script
                                               // If true, skips oeCloud validation during migration of this file
 
-            "updateAttributes": true,         // Optional property, value is boolean. Default: false
+            "updateAttributes": true,         // Optional property, value is boolean. Default: false. Ignored if file is JS script
                                               // If true, does an updateAttributes instead of an upsert for this file.
                                               // If this is set to true, the json data needs to have an 'id' field for each
                                               // record. Alternatively, the 'key' property (see below) needs to be specified.
 
-            "key": "field2",                  // Optional property. Value is a string fieldname. Used in conjunction with
+            "key": "field2",                  // Optional property. Ignored if file is JS script. Value is a string fieldname. Used in conjunction with
                                               // "updateAttributes" (see above) Specifies a unique field other than 'id' to be
                                               // used as PK for performing updateAttributes using data in this file.
 
-            "model": "Customer",              // Mandatory property. The model name to use for this file's migration
+            "model": "Customer",              // Mandatory property if file is json. The model name to use for this json file's migration. Ignored if file is JS script
 
             "enabled": true,                  // Optional property. If false, skips migration from this file. Default: true
 
-            "file": "default/customer.json",  // Mandatory property. Relative path under "db" folder to the json file's location
+            "file": "default/customer.js(on)",  // Mandatory property. Relative path under "db" folder to the json/JS file's location
 
             "ctxId": "/default"               // Mandatory property. Should match one of the keys under "contexts"
         },

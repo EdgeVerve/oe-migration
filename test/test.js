@@ -1107,6 +1107,24 @@ describe(chalk.blue('oe-migration tests'), function (done) {
         });
     });
 
+
+    it('should successfuly perform migration with js files', function (done) {
+        var TAG = '[should successfuly perform migration with js files]';
+        this.timeout(10000);
+        console.log(chalk.yellow('[' + new Date().toISOString() + ']      : ', 'Starting ' + TAG));
+        var options = {verbose: true};
+
+        migration.setBasePath(path.resolve(process.cwd(), 'test', 'db'));
+        copyRecursiveSync(path.join(process.cwd(), 'test', 'db1', '25.0.1'), path.join(basePath, '25.0.1'));
+
+        migration.migrate(options, function (err, oldDbVersion, data) {
+            expect(oldDbVersion).to.equal('25.0.0');
+            expect(data.migratedVersions).to.eql(['25.0.1']);
+            done();
+        });
+    });
+
+
     it('The new data should have the default values populated', function (done) {
         var TAG = '[The new data should have the default values populated]';
         this.timeout(1000000);
@@ -1145,7 +1163,7 @@ describe(chalk.blue('oe-migration tests'), function (done) {
             expect(err).to.be.defined;
             expect(err.message).to.contain('Model MigrationTest4 specified in');
             expect(err.message).to.contain('does not exist');
-            expect(oldDbVersion).to.equal('25.0.0');
+            expect(oldDbVersion).to.equal('25.0.1');
             expect(data.migratedVersions).to.be.null;
             done();
         });
