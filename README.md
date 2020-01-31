@@ -264,7 +264,7 @@ The `server/migrate.js` can be executed repeatedly with/without additional data 
 <a name="bookmark2b"></a>
 ### Migration of app-list module seed data
 
-*oe-migration* supports the migration of *app-list* modules by leveraging the `options.basePath` parameter of the `migrate()` function.
+*oe-migration* supports the migration of seed-data from *app-list* modules by leveraging the `options.basePath` parameter of the `migrate()` function.
 
 For this to work, 
 
