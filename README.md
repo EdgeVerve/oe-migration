@@ -36,7 +36,7 @@ This migration module has the following features:
 
 3. Allows loading of data from [JSON files present in the project's app-list modules](#bookmark2b), to database
 
-4. Allows execution of JS files for custom processing and migration to database
+4. Allows [execution of JS files](#Running Custom JS files) for custom processing and migration to database
 
 5. Allows [versioned data migration](#bookmark2), with data-folder name as the DB version. (de-linked from app package version).
 
