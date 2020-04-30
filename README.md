@@ -5,6 +5,7 @@
 - [Setup](#Setup)<BR>
 - [Usage](#Usage)<BR>
     - [Migration from Command-Line](#Migration from Command-Line)<BR>
+    - [Running Custom JS files](#Running Custom JS files)<BR>
     - [Downloading zip file of DB data](#Downloading zip file of DB data)<BR>
     - [Uploading zip file for migration](#Uploading zip file for migration)<BR>
 - [Configuration](#Configuration)
@@ -245,6 +246,33 @@ An example of MigrationLogs is shown below:
 ```
 
 The `server/migrate.js` can be executed repeatedly with/without additional data in the `<server>/db` folder.
+
+<a name="Running Custom JS files"></a>
+### Running Custom JS files
+
+In cases where migration needs additional complex logic to be executed, you can wrap the `migrate` call in custom javascript module callback.
+
+```javascript
+    var app = require('oe-cloud');
+    var preMigrate = require('some/path/pre-migrate.js');
+    var postMigrate = require('some/path/post-migrate.js');
+    app.boot(__dirname, function (err) {
+        if (err) { console.log(err); process.exit(1); }
+
+        var m = require('oe-migration');
+        preMigrate('arguments', function(err, data) {
+            if(err) process.exit(1);
+            m.migrate(function(err, oldDbVersion, migratedVersions) {
+                if(err) process.exit(1);
+                postMigrate('arguments', function(err, data){
+                    if(err) process.exit(1); else process.exit(0);   
+                }
+            });
+        }
+    });
+```
+
+You must ensure the rerunnability of your custom javascript code for a rerunnable migration.
 
 <a name="bookmark3"></a>
 <a name="Downloading zip file of DB data"></a>

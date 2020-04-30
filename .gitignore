@@ -43,3 +43,4 @@ test/extracts/
 test/tmp/
 test/db/
 package-lock.json
+oracle-user.sh
