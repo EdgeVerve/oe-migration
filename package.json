@@ -1,6 +1,6 @@
 {
   "name": "oe-migration",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "This module is an app-list module for oe-Cloud based applications. It provides the ability to perform data migration and/or data seeding into the app db from json files",
   "engines": {
     "node": ">=6"

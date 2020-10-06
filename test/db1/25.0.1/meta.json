@@ -1,0 +1,20 @@
+{
+    "contexts": {
+        "/default": {
+            "id": 0,
+            "tenantId": "/default",
+            "remoteUser": "defaultuser"
+        }
+    },
+    "files": [{
+            "enabled": true,
+            "file": "default/migration-test1.js",
+            "ctxId": "/default"
+        },
+        {
+            "enabled": true,
+            "file": "default/migration-test2.js",
+            "ctxId": "/default"
+        }
+    ]
+}
